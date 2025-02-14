@@ -2,12 +2,12 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:camera/camera.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:image/image.dart' as img;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:stress_management_app/services/localNotification.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:workmanager/workmanager.dart';
 
 class EmotionDetectionViewModel extends ChangeNotifier {
   CameraController? _cameraController;
@@ -30,10 +30,17 @@ class EmotionDetectionViewModel extends ChangeNotifier {
     await _loadModel();
     await _notificationService.initialize(context);
     _startEmotionDetection();
+    scheduleEmotionDetection();
 
     if (await Permission.notification.isDenied) {
       await Permission.notification.request();
     }
+  }
+
+  /// Initialize without UI for background execution
+  Future<void> initializeWithoutUI() async {
+    await _initializeCamera();
+    await _loadModel();
   }
 
   /// Setup front camera
@@ -63,15 +70,29 @@ class EmotionDetectionViewModel extends ChangeNotifier {
     }
   }
 
+  /// Schedule background emotion detection using WorkManager
+  void scheduleEmotionDetection() {
+    Workmanager().registerPeriodicTask(
+      "emotion_detection_task",
+      "captureAndAnalyze",
+      frequency: Duration(minutes: 15), // WorkManager minimum time
+      initialDelay: Duration(seconds: 10),
+      constraints: Constraints(
+        networkType: NetworkType.connected,
+        requiresBatteryNotLow: true,
+      ),
+    );
+  }
+
   /// Capture an image every 10 seconds and analyze it
   void _startEmotionDetection() {
     Timer.periodic(Duration(seconds: _triggerTime), (timer) async {
-      await _captureAndAnalyze();
+      await captureAndAnalyze();
     });
   }
 
   /// Capture an image and analyze the emotion
-  Future<void> _captureAndAnalyze() async {
+  Future<void> captureAndAnalyze() async {
     if (_cameraController == null || !_cameraController!.value.isInitialized) {
       debugPrint("❌ Camera not initialized.");
       return;
@@ -79,7 +100,7 @@ class EmotionDetectionViewModel extends ChangeNotifier {
 
     try {
       final XFile imageFile = await _cameraController!.takePicture();
-      String detectedEmotion = await _analyzeImage(File(imageFile.path));
+      String detectedEmotion = await analyzeImage(File(imageFile.path));
       _currentEmotion = detectedEmotion;
 
       debugPrint("🎭 Detected Emotion: $detectedEmotion");
@@ -106,7 +127,7 @@ class EmotionDetectionViewModel extends ChangeNotifier {
   }
 
   /// Analyze image using TFLite model
-  Future<String> _analyzeImage(File imageFile) async {
+  Future<String> analyzeImage(File imageFile) async {
     if (_interpreter == null) {
       debugPrint("❌ Error: TFLite Interpreter is not initialized.");
       return "Unknown";
@@ -162,6 +183,15 @@ class EmotionDetectionViewModel extends ChangeNotifier {
       rgbImage.add(row);
     }
     return rgbImage;
+  }
+
+  void incrementSadCount() {
+    _sadCount++;
+    if (_sadCount >= _sadThreshold) {
+      _sendNotification();
+      _sadCount = 0; // Reset after notification
+    }
+    notifyListeners();
   }
 
   /// Dispose resources

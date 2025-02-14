@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stress_management_app/screens/EmotionDetectionService/emotion_detection_service_screen.dart';
 import 'package:stress_management_app/screens/camScreen/camView.dart';
-import 'package:stress_management_app/screens/emotionDeduction/emotion_detection_screen.dart';
 import 'package:stress_management_app/screens/tips/tipsView.dart';
 import 'package:stress_management_app/widgets/custom_nav_bar.dart';
 
@@ -19,8 +18,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final List<Widget> _pages = [
     const Camview(),
-    // EmotionDetectionScreen(),
-    TipsView(),
+    const TipsView(),
     EmotionDetectionServiceScreen(),
   ];
 
