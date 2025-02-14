@@ -13,7 +13,8 @@ class EmotionDetectionViewModel extends ChangeNotifier {
   CameraController? _cameraController;
   Interpreter? _interpreter;
   int _sadCount = 0;
-  final int _sadThreshold = 2;
+  final int _sadThreshold = 3;
+  final int _triggerTime = 5;
   String _currentEmotion = "Detecting...";
   // FlutterLocalNotificationsPlugin _notificationsPlugin =
   //     FlutterLocalNotificationsPlugin();
@@ -68,7 +69,7 @@ class EmotionDetectionViewModel extends ChangeNotifier {
 
   /// Capture an image every 10 seconds and analyze it
   void _startEmotionDetection() {
-    Timer.periodic(const Duration(seconds: 2), (timer) async {
+    Timer.periodic(Duration(seconds: _triggerTime), (timer) async {
       await _captureAndAnalyze();
     });
   }
