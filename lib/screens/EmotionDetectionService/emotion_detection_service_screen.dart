@@ -8,7 +8,7 @@ class EmotionDetectionServiceScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return ViewModelBuilder<EmotionDetectionViewModel>.reactive(
       viewModelBuilder: () => EmotionDetectionViewModel(),
-      onViewModelReady: (viewModel) => viewModel.initialize(),
+      onViewModelReady: (viewModel) => viewModel.initialize(context),
       builder: (context, viewModel, child) {
         return Scaffold(
           appBar: AppBar(title: Text('Emotion Detection')),

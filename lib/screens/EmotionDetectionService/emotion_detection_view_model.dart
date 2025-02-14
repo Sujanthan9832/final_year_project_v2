@@ -16,23 +16,19 @@ class EmotionDetectionViewModel extends ChangeNotifier {
   final int _sadThreshold = 3;
   final int _triggerTime = 5;
   String _currentEmotion = "Detecting...";
-  // FlutterLocalNotificationsPlugin _notificationsPlugin =
-  //     FlutterLocalNotificationsPlugin();
   final NotificationService _notificationService = NotificationService();
   CameraController get cameraController => _cameraController!;
-  bool isCameraInitialized = false; // Add this at the top of your ViewModel
-  /// Expose current emotion
+  bool isCameraInitialized = false;
+
   String get currentEmotion => _currentEmotion;
 
-  /// Expose sad count
   int get sadCount => _sadCount;
 
   /// Initialize camera and load TFLite model
-  Future<void> initialize() async {
+  Future<void> initialize(BuildContext context) async {
     await _initializeCamera();
     await _loadModel();
-    // _initializeNotifications();
-    await _notificationService.initialize();
+    await _notificationService.initialize(context);
     _startEmotionDetection();
 
     if (await Permission.notification.isDenied) {
@@ -167,42 +163,6 @@ class EmotionDetectionViewModel extends ChangeNotifier {
     }
     return rgbImage;
   }
-
-  /// Initialize notifications
-  // void _initializeNotifications() {
-  //   const AndroidInitializationSettings androidSettings =
-  //       AndroidInitializationSettings('@mipmap/ic_launcher');
-  //   const InitializationSettings settings =
-  //       InitializationSettings(android: androidSettings);
-  //   _notificationsPlugin.initialize(settings);
-  // }
-
-  /// Send notification when sad count reaches 3
-  // Future<void> _sendNotification() async {
-  //   debugPrint("📢 Sending notification...");
-
-  //   const AndroidNotificationDetails androidDetails =
-  //       AndroidNotificationDetails(
-  //     'emotion_alert',
-  //     'Emotion Detection Alert',
-  //     channelDescription:
-  //         'Notifies when sad emotion is detected multiple times',
-  //     importance: Importance.max, // ✅ Set to max for visibility
-  //     priority: Priority.high, // ✅ Set to high priority
-  //     playSound: true, // ✅ Ensure sound is played
-  //     enableVibration: true, // ✅ Vibrate the phone
-  //   );
-
-  //   const NotificationDetails details =
-  //       NotificationDetails(android: androidDetails);
-
-  //   await _notificationsPlugin.show(
-  //     0,
-  //     "⚠️ Emotional Alert",
-  //     "Sad emotion detected 3 times in a row!",
-  //     details,
-  //   );
-  // }
 
   /// Dispose resources
   @override

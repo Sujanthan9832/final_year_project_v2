@@ -13,12 +13,10 @@ class TipsViewModel extends BaseViewModel {
       QuerySnapshot querySnapshot = await _firestore.collection("tips").get();
 
       _tips = querySnapshot.docs.expand((doc) {
-        Map<String, dynamic> testMap = doc["test2"]; // Fetch the map
+        Map<String, dynamic> testMap = doc["test2"];
         return testMap.entries
-            .map((entry) => {
-                  "title": entry.key, // Key (e.g., "tip1", "tip2")
-                  "description": entry.value.toString() // Value (actual tip)
-                })
+            .map((entry) =>
+                {"title": entry.key, "description": entry.value.toString()})
             .toList();
       }).toList();
     } catch (e) {
