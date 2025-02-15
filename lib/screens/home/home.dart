@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:stress_management_app/providers/locator.dart';
 import 'package:stress_management_app/screens/EmotionDetectionService/emotion_detection_service_screen.dart';
 import 'package:stress_management_app/screens/camScreen/camView.dart';
+import 'package:stress_management_app/screens/more/moreView.dart';
 import 'package:stress_management_app/screens/tips/tipsView.dart';
 import 'package:stress_management_app/widgets/custom_nav_bar.dart';
 
@@ -17,9 +19,10 @@ class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
 
   final List<Widget> _pages = [
-    const Camview(),
     const TipsView(),
     EmotionDetectionServiceScreen(),
+    // const Camview(),
+    const MoreView(),
   ];
 
   void _onItemTapped(int index) {
@@ -31,11 +34,23 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surface,
       resizeToAvoidBottomInset: false,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        // backgroundColor: colors.brandColor,
+        title: Center(
+          child: Text(
+            widget.title,
+            style: TextStyle(
+              color: colors.brandBlack,
+              fontFamily: "Josefin Sans",
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
       ),
       body: _pages[_selectedIndex],
       floatingActionButton: FloatingActionButton(
@@ -54,9 +69,8 @@ class _MyHomePageState extends State<MyHomePage> {
         // backgroundColor: colors.brandWhite,
         // foregroundColor: colors.brandBlack
         backgroundColor: Theme.of(context).colorScheme.primary,
-        foregroundColor: _selectedIndex == 2
-            ? Color.fromARGB(255, 255, 255, 255)
-            : Color.fromARGB(255, 0, 0, 0),
+        foregroundColor:
+            _selectedIndex == 1 ? colors.brandColor : colors.commonGra,
         child: const Icon(Icons.camera),
         // elevation: 0,
       ),

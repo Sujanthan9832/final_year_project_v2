@@ -1,8 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:stress_management_app/providers/customProvider.dart';
+import 'package:stress_management_app/providers/locator.dart';
 import 'package:stress_management_app/screens/EmotionDetectionService/emotion_detection_view_model.dart';
 import 'package:stress_management_app/screens/home/home.dart';
-import 'package:stress_management_app/services/image_capture_service.dart';
 import 'package:stress_management_app/services/localNotification.dart';
 import 'package:workmanager/workmanager.dart';
 
@@ -12,8 +14,10 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   await Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
-
-  runApp(const MyApp());
+  setup();
+  runApp(MultiProvider(providers: [
+    ChangeNotifierProvider(create: (context) => CustomProvider()),
+  ], child: const MyApp()));
 }
 
 /// Background task handler
@@ -31,19 +35,24 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Stress Management App',
-      debugShowCheckedModeBanner: false,
-      navigatorKey: navigatorKey,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color.fromARGB(255, 58, 183, 68)),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Stress Management App'),
-      builder: (context, child) {
-        NotificationService().initialize(context); // Pass context
-        return child!;
+    return Consumer<CustomProvider>(
+      builder: (context, customProvider, child) {
+        return MaterialApp(
+          title: 'Stress Management App',
+          debugShowCheckedModeBanner: false,
+          navigatorKey: navigatorKey,
+          theme: customProvider.themeData,
+          // theme: ThemeData(
+          //   colorScheme: ColorScheme.fromSeed(
+          //       seedColor: const Color.fromARGB(255, 58, 183, 68)),
+          //   useMaterial3: true,
+          // ),
+          home: const MyHomePage(title: 'Stress Management App'),
+          builder: (context, child) {
+            NotificationService().initialize(context); // Pass context
+            return child!;
+          },
+        );
       },
     );
   }

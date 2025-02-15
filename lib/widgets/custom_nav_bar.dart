@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stress_management_app/providers/locator.dart';
 
 class CustomBottomNavigationBar extends StatelessWidget {
   final int selectedIndex; // To receive the selected index
@@ -23,8 +24,8 @@ class CustomBottomNavigationBar extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           CustomIconButton(
-            icon: Icons.contacts,
-            label: "Massages",
+            icon: Icons.chat_bubble,
+            label: "Tips",
             index: 0,
             selectedIndex: selectedIndex,
             onItemSelected: onItemSelected,
@@ -35,8 +36,8 @@ class CustomBottomNavigationBar extends StatelessWidget {
             ),
           ),
           CustomIconButton(
-            icon: Icons.settings,
-            label: "Settings",
+            icon: Icons.more_horiz,
+            label: "More",
             index: 2,
             selectedIndex: selectedIndex,
             onItemSelected: onItemSelected,
@@ -74,14 +75,12 @@ class CustomIconButton extends StatelessWidget {
         children: [
           Icon(
             icon,
-            color: isSelected
-                ? Color.fromARGB(255, 255, 255, 255)
-                : Color.fromARGB(255, 0, 0, 0),
+            color: isSelected ? colors.brandColor : colors.commonGra,
           ),
           Text(
             label,
             style: TextStyle(
-              // color: isSelected ? colors.brandRed : colors.commonGra,
+              color: isSelected ? colors.brandColor : colors.commonGra,
               fontSize: 12,
             ),
           ),
